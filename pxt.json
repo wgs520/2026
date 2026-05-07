@@ -1,0 +1,31 @@
+{
+    "name": "2026小车红蓝矫正",
+    "description": "",
+    "dependencies": {
+        "core": "*",
+        "radio": "*",
+        "microphone": "*",
+        "pxt-nezha2": "github:elecfreaks/pxt-nezha2#v1.1.3",
+        "pxt-PlanetX": "github:elecfreaks/pxt-planetx#v1.5.29"
+    },
+    "files": [
+        "main.blocks",
+        "main.ts",
+        "README.md"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "targetVersions": {
+        "branch": "v7.0.51",
+        "tag": "v7.0.51",
+        "commits": "https://github.com/microsoft/pxt-microbit/commits/c3819f016bd720d0eb86efea9a84dcd4fc7b2e1f",
+        "target": "8.0.21",
+        "pxt": "11.1.5",
+        "targetId": "microbit"
+    },
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "blocksprj"
+}
