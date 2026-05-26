@@ -189,7 +189,7 @@ function 颜色识别启动 () {
         }
     }
 }
-// 按键A：针对具体模式执行相关程序
+// 按键A：针对具体模式执行相关程序+
 input.onButtonPressed(Button.A, function () {
     按键A进入调试()
 })
