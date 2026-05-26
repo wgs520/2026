@@ -1,9 +1,6 @@
 /**
  * 手柄控制部分相关程序
  */
-/**
- * 机械抓和升降台控制程序
- */
 function 对齐T线 (速度: number) {
     对齐T线变量 = 0
     while (true) {
@@ -127,16 +124,19 @@ function 降到底部等待 () {
     升降台当前角度 = 1
     basic.pause(1000)
 }
-function 提升一定高度 () {
-    nezhaV2.setServoSpeed(40)
-    nezhaV2.motorSpeed(NezhaV2MotorPostion.M4, NezhaV2MovementDirection.CW, 升降太缓慢上升, NezhaV2SportsMode.Degree)
-    升降太缓慢上升 = 升降太缓慢上升 + 100
-    if (升降太缓慢上升 >= 升降台默认升高角度) {
-        升降台当前角度 = 1
-        升降太缓慢上升 = 100
+function 抓子收放 () {
+    if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Cir)) {
+        nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M3, 30)
+    } else {
+        if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Squ)) {
+            nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M3, -30)
+        } else {
+            nezhaV2.nezha2MotorStop(NezhaV2MotorPostion.M3)
+        }
     }
 }
 function 收集火种2 () {
+    let 自动_火种2前进距离 = 0
     巡线时间(1, 12)
     左右看路口(1, 20, 自动_火种2前进距离)
     抓紧爪子()
@@ -168,7 +168,9 @@ function 初始化 () {
     机械抓当前角度 = 0
     机械爪_角度_倍数 = 5
     调整中 = 0
-    升降太缓慢上升 = 100
+    平台当前高度 = 0
+    爪子角度 = 0
+    爪子状态1 = 0
     basic.pause(500)
 }
 function 颜色识别启动 () {
@@ -247,6 +249,17 @@ function 按键A进入调试 () {
         机械抓合拢调整()
     }
 }
+function 平台上下 () {
+    if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.X)) {
+        nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M4, 50)
+    } else {
+        if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Tri)) {
+            nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M4, -50)
+        } else {
+            nezhaV2.nezha2MotorStop(NezhaV2MotorPostion.M4)
+        }
+    }
+}
 function 走时间 (左轮速度: number, 右轮速度: number, 时间_s: number) {
     控制两个轮子(左轮速度, 右轮速度)
     basic.pause(时间_s * 1000)
@@ -277,13 +290,13 @@ function 手柄控制 () {
     while (true) {
         if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.UP)) {
             匀加速()
-            手柄速度_left = 手柄速度_now
-            手柄速度_right = 手柄速度_now
+            手柄速度_left = -1 * 手柄速度_now
+            手柄速度_right = -1 * 手柄速度_now
             nezhaV2.setSpeedfLeftRightWheel(手柄速度_left, 手柄速度_right)
         } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.DOWN)) {
             匀加速()
-            手柄速度_left = -1 * 手柄速度_now
-            手柄速度_right = -1 * 手柄速度_now
+            手柄速度_left = 手柄速度_now
+            手柄速度_right = 手柄速度_now
             nezhaV2.setSpeedfLeftRightWheel(手柄速度_left, 手柄速度_right)
         } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.LEFT)) {
             匀加速()
@@ -307,25 +320,8 @@ function 手柄控制 () {
             匀减速()
             nezhaV2.setSpeedfLeftRightWheel(手柄速度_left, 手柄速度_right)
         }
-        if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Tri)) {
-            if (升降台当前角度 == 0) {
-                升到最高()
-            }
-        } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.X)) {
-            if (升降台当前角度 == 1) {
-                降到底部()
-            }
-        } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Squ)) {
-            // 机械抓抓住东西
-            if (机械抓当前角度 == 0) {
-                抓紧爪子()
-            }
-        } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Cir)) {
-            // 机械抓抓住东西
-            if (机械抓当前角度 == 1) {
-                松开爪子()
-            }
-        }
+        抓子收放()
+        平台上下()
     }
 }
 function 启动电机直到 (左轮速度: number, 右轮速度: number, 光电编号: number, 黑白: number) {
@@ -406,6 +402,9 @@ function 机械抓合拢调整 () {
         调整中 = 0
     }
 }
+/**
+ * 机械抓和升降台控制程序
+ */
 function 松开爪子 () {
     nezhaV2.setServoSpeed(100)
     nezhaV2.motorSpeed(NezhaV2MotorPostion.M3, NezhaV2MovementDirection.CW, 360 * 机械爪_角度_倍数, NezhaV2SportsMode.Degree)
@@ -428,6 +427,7 @@ function 升到最高 () {
  */
 function 红蓝校准 () {
     while (true) {
+        let 蓝白阈值 = 0
         光电1 = PlanetX_Basic.TrackbitgetGray(PlanetX_Basic.TrackbitChannel.One)
         光电4 = PlanetX_Basic.TrackbitgetGray(PlanetX_Basic.TrackbitChannel.Four)
         if (光电1 > 蓝白阈值 && 光电4 > 蓝白阈值) {
@@ -576,11 +576,6 @@ function 自动阶段参数设置 () {
     自动_红框处后退的距离 = 2.5
     自动_蓝框处后退的距离 = 2
     自动_红框转到火种的角度 = 84.5
-    自动_蓝框转到火种的角度 = 84
-    自动_火种2前进距离 = 0
-    篮筐灰度值 = 179
-    背景灰度值 = 11
-    蓝白阈值 = (篮筐灰度值 + 背景灰度值) / 2
 }
 function 升降台上升调整 () {
     if (!(调整中)) {
@@ -614,6 +609,7 @@ function 降到底部 () {
     升降台当前角度 = 0
 }
 function 原石放入蓝区 () {
+    let 自动_蓝框转到火种的角度 = 0
     转向_角度控制(0 - 自动_左转到蓝框的角度)
     红蓝校准()
     basic.pause(500)
@@ -686,9 +682,6 @@ function 转弯 (左轮速度: number, 右轮速度: number) {
     }
     控制两个轮子(0, 0)
 }
-let 背景灰度值 = 0
-let 篮筐灰度值 = 0
-let 自动_蓝框转到火种的角度 = 0
 let 自动_蓝框处后退的距离 = 0
 let 自动_左转到蓝框的角度 = 0
 let pid_pwm = 0
@@ -704,7 +697,6 @@ let pid_D = 0
 let pid_I = 0
 let pid_P = 0
 let 速度 = 0
-let 蓝白阈值 = 0
 let 光电4 = 0
 let 光电1 = 0
 let 手柄速度_right = 0
@@ -716,6 +708,9 @@ let 手柄加减速调整幅度 = 0
 let 自动_红框转到火种的角度 = 0
 let 自动_红框处后退的距离 = 0
 let 自动_右转到红框的角度 = 0
+let 爪子状态1 = 0
+let 爪子角度 = 0
+let 平台当前高度 = 0
 let 机械爪_角度_倍数 = 0
 let 机械抓当前角度 = 0
 let set_PID_D = 0
@@ -723,8 +718,6 @@ let set_PID_I = 0
 let set_PID_P = 0
 let set_SP = 0
 let 默认走过的距离 = 0
-let 自动_火种2前进距离 = 0
-let 升降太缓慢上升 = 0
 let 初始时间 = 0
 let 颜色 = 0
 let 自动_T字走过路口的距离 = 0
