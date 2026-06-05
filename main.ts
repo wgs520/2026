@@ -33,7 +33,7 @@ function 升到最高等待 () {
 function 收集火种1 () {
     basic.pause(1000)
     走距离_相对角度控制(5)
-    抓紧爪子()
+    抓紧爪子(4)
     basic.pause(2000)
     升到最高()
     走距离_相对角度控制(32)
@@ -43,7 +43,7 @@ function 收集火种1 () {
     转弯(20, 0)
     巡线时间(1, 12)
     左右看路口(0, 20, 18)
-    松开爪子()
+    松开爪子(4)
     basic.pause(1000)
     走距离_相对角度控制(-5)
     转弯(20, -20)
@@ -81,13 +81,13 @@ function 转向_角度控制 (度数: number) {
 }
 function 原石归位 () {
     走距离_相对角度控制(18)
-    抓紧爪子()
+    抓紧爪子(4)
     basic.pause(1000)
     升到最高等待()
     basic.pause(1000)
     走距离_相对角度控制(26)
     摆动找线()
-    巡线时间(0.5, -1)
+    巡线时间(1, -1)
     左右看路口(1, 20, 自动_拐角走过路口的距离)
     转弯(20, -20)
     左右看路口(0, 20, 0)
@@ -139,7 +139,7 @@ function 收集火种2 () {
     let 自动_火种2前进距离 = 0
     巡线时间(1, 12)
     左右看路口(1, 20, 自动_火种2前进距离)
-    抓紧爪子()
+    抓紧爪子(4)
     basic.pause(2000)
     升到最高()
     basic.pause(500)
@@ -149,7 +149,7 @@ function 收集火种2 () {
     basic.pause(500)
     巡线时间(1, 12)
     左右看路口(0, 20, 18)
-    松开爪子()
+    松开爪子(4)
     basic.pause(1000)
     走距离_相对角度控制(-10)
     降到底部等待()
@@ -171,6 +171,7 @@ function 初始化 () {
     平台当前高度 = 0
     爪子角度 = 0
     爪子状态1 = 0
+    自动阶段参数设置()
     basic.pause(500)
 }
 function 颜色识别启动 () {
@@ -179,7 +180,7 @@ function 颜色识别启动 () {
             颜色 = 1
             basic.showNumber(颜色)
             break;
-        } else if (PlanetX_Basic.checkColor(PlanetX_Basic.ColorList.blue)) {
+        } else if (PlanetX_Basic.checkColor(PlanetX_Basic.ColorList.cyan)) {
             颜色 = 2
             basic.showNumber(颜色)
             break;
@@ -195,12 +196,11 @@ input.onButtonPressed(Button.A, function () {
 })
 function 原石放入红区 () {
     转向_角度控制(自动_右转到红框的角度)
-    红蓝校准()
     basic.pause(500)
     走距离_相对角度控制(0 - 自动_红框处后退的距离)
     basic.pause(500)
     降到底部等待()
-    松开爪子()
+    松开爪子(4)
     升到最高等待()
     basic.pause(1000)
     转向_角度控制(0 - 自动_红框转到火种的角度)
@@ -251,10 +251,10 @@ function 按键A进入调试 () {
 }
 function 平台上下 () {
     if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.X)) {
-        nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M4, 50)
+        nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M4, -50)
     } else {
         if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Tri)) {
-            nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M4, -50)
+            nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M4, 50)
         } else {
             nezhaV2.nezha2MotorStop(NezhaV2MotorPostion.M4)
         }
@@ -265,9 +265,9 @@ function 走时间 (左轮速度: number, 右轮速度: number, 时间_s: number
     basic.pause(时间_s * 1000)
     控制两个轮子(0, 0)
 }
-function 抓紧爪子 () {
+function 抓紧爪子 (原石或火种: number) {
     nezhaV2.setServoSpeed(100)
-    nezhaV2.motorSpeed(NezhaV2MotorPostion.M3, NezhaV2MovementDirection.CCW, 360 * 机械爪_角度_倍数, NezhaV2SportsMode.Degree)
+    nezhaV2.motorSpeed(NezhaV2MotorPostion.M3, NezhaV2MovementDirection.CCW, 360 * 原石或火种, NezhaV2SportsMode.Degree)
     机械抓当前角度 = 1
     basic.pause(200)
 }
@@ -309,13 +309,13 @@ function 手柄控制 () {
             手柄速度_right = -1 * 手柄速度_now
             nezhaV2.setSpeedfLeftRightWheel(手柄速度_left, 手柄速度_right)
         } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Left2)) {
-            nezhaV2.setSpeedfLeftRightWheel(-15, 15)
+            nezhaV2.setSpeedfLeftRightWheel(-10, 10)
         } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Right2)) {
-            nezhaV2.setSpeedfLeftRightWheel(15, -15)
+            nezhaV2.setSpeedfLeftRightWheel(10, -10)
         } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Left1)) {
-            nezhaV2.setSpeedfLeftRightWheel(18, 18)
+            nezhaV2.setSpeedfLeftRightWheel(15, 15)
         } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Right1)) {
-            nezhaV2.setSpeedfLeftRightWheel(-18, -18)
+            nezhaV2.setSpeedfLeftRightWheel(-15, -15)
         } else {
             匀减速()
             nezhaV2.setSpeedfLeftRightWheel(手柄速度_left, 手柄速度_right)
@@ -405,9 +405,9 @@ function 机械抓合拢调整 () {
 /**
  * 机械抓和升降台控制程序
  */
-function 松开爪子 () {
+function 松开爪子 (原石或火种: number) {
     nezhaV2.setServoSpeed(100)
-    nezhaV2.motorSpeed(NezhaV2MotorPostion.M3, NezhaV2MovementDirection.CW, 360 * 机械爪_角度_倍数, NezhaV2SportsMode.Degree)
+    nezhaV2.motorSpeed(NezhaV2MotorPostion.M3, NezhaV2MovementDirection.CW, 360 * 原石或火种, NezhaV2SportsMode.Degree)
     机械抓当前角度 = 0
     basic.pause(200)
 }
@@ -422,9 +422,6 @@ function 升到最高 () {
     nezhaV2.motorSpeed(NezhaV2MotorPostion.M4, NezhaV2MovementDirection.CW, 升降台默认升高角度, NezhaV2SportsMode.Degree)
     升降台当前角度 = 1
 }
-/**
- * 自动运行部分相关程序
- */
 function 红蓝校准 () {
     while (true) {
         let 蓝白阈值 = 0
@@ -573,9 +570,10 @@ function 自动阶段参数设置 () {
     自动_T字走过路口的距离 = 18
     自动_右转到红框的角度 = 86.5
     自动_左转到蓝框的角度 = 86.5
-    自动_红框处后退的距离 = 2.5
+    自动_红框处后退的距离 = 2
     自动_蓝框处后退的距离 = 2
-    自动_红框转到火种的角度 = 84.5
+    自动_红框转到火种的角度 = 83
+    自动_蓝框转到火种的角度 = 83
 }
 function 升降台上升调整 () {
     if (!(调整中)) {
@@ -608,15 +606,16 @@ function 降到底部 () {
     nezhaV2.motorSpeed(NezhaV2MotorPostion.M4, NezhaV2MovementDirection.CCW, 升降台默认升高角度, NezhaV2SportsMode.Degree)
     升降台当前角度 = 0
 }
+/**
+ * 自动运行部分相关程序
+ */
 function 原石放入蓝区 () {
-    let 自动_蓝框转到火种的角度 = 0
     转向_角度控制(0 - 自动_左转到蓝框的角度)
-    红蓝校准()
     basic.pause(500)
     走距离_相对角度控制(0 - 自动_蓝框处后退的距离)
     basic.pause(500)
     降到底部等待()
-    松开爪子()
+    松开爪子(4)
     升到最高等待()
     basic.pause(1000)
     转向_角度控制(自动_蓝框转到火种的角度)
@@ -682,6 +681,7 @@ function 转弯 (左轮速度: number, 右轮速度: number) {
     }
     控制两个轮子(0, 0)
 }
+let 自动_蓝框转到火种的角度 = 0
 let 自动_蓝框处后退的距离 = 0
 let 自动_左转到蓝框的角度 = 0
 let pid_pwm = 0
