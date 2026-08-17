@@ -251,10 +251,18 @@ function 按键A进入调试 () {
 }
 function 平台上下 () {
     if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.X)) {
-        nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M4, -50)
+        if (nezhaV2.readServoRelativePostion(NezhaV2MotorPostion.M4) <= -10) {
+            nezhaV2.nezha2MotorStop(NezhaV2MotorPostion.M4)
+        } else {
+            nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M4, -50)
+        }
     } else {
         if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.Tri)) {
-            nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M4, 50)
+            if (nezhaV2.readServoRelativePostion(NezhaV2MotorPostion.M4) >= 760) {
+                nezhaV2.nezha2MotorStop(NezhaV2MotorPostion.M4)
+            } else {
+                nezhaV2.nezha2MotorSpeedCtrolExport(NezhaV2MotorPostion.M4, 50)
+            }
         } else {
             nezhaV2.nezha2MotorStop(NezhaV2MotorPostion.M4)
         }
