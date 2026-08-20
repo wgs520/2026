@@ -180,7 +180,7 @@ function 颜色识别启动 () {
             颜色 = 1
             basic.showNumber(颜色)
             break;
-        } else if (PlanetX_Basic.checkColor(PlanetX_Basic.ColorList.cyan)) {
+        } else if (PlanetX_Basic.checkColor(PlanetX_Basic.ColorList.blue)) {
             颜色 = 2
             basic.showNumber(颜色)
             break;
@@ -298,13 +298,13 @@ function 手柄控制 () {
     while (true) {
         if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.UP)) {
             匀加速()
-            手柄速度_left = -1 * 手柄速度_now
-            手柄速度_right = -1 * 手柄速度_now
+            手柄速度_left = 手柄速度_now
+            手柄速度_right = 手柄速度_now
             nezhaV2.setSpeedfLeftRightWheel(手柄速度_left, 手柄速度_right)
         } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.DOWN)) {
             匀加速()
-            手柄速度_left = 手柄速度_now
-            手柄速度_right = 手柄速度_now
+            手柄速度_left = -1 * 手柄速度_now
+            手柄速度_right = -1 * 手柄速度_now
             nezhaV2.setSpeedfLeftRightWheel(手柄速度_left, 手柄速度_right)
         } else if (PlanetX_Basic.get_Attention_Value(PlanetX_Basic.value_level.LEFT)) {
             匀加速()
@@ -575,13 +575,13 @@ function 左右看路口 (模式: number, 速度: number, 走过路口的距离:
 }
 function 自动阶段参数设置 () {
     自动_拐角走过路口的距离 = 10.4
-    自动_T字走过路口的距离 = 18
-    自动_右转到红框的角度 = 86.5
+    自动_T字走过路口的距离 = 17
+    自动_右转到红框的角度 = 80.5
     自动_左转到蓝框的角度 = 86.5
     自动_红框处后退的距离 = 2
-    自动_蓝框处后退的距离 = 2
-    自动_红框转到火种的角度 = 83
-    自动_蓝框转到火种的角度 = 83
+    自动_蓝框处后退的距离 = 2.1
+    自动_红框转到火种的角度 = 85
+    自动_蓝框转到火种的角度 = 74.14
 }
 function 升降台上升调整 () {
     if (!(调整中)) {
